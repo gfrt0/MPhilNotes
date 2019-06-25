@@ -1,0 +1,33 @@
+\BOOKMARK [1][-]{section.1}{Models of Demand for Differentiated Products}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Basics}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Parametric Assumptions and the Mean Utility Index}{section.1}% 3
+\BOOKMARK [2][-]{subsection.1.3}{Probit}{section.1}% 4
+\BOOKMARK [2][-]{subsection.1.4}{Logit}{section.1}% 5
+\BOOKMARK [2][-]{subsection.1.5}{Nested Logit}{section.1}% 6
+\BOOKMARK [2][-]{subsection.1.6}{\(Random Coefficients\) Mixed Logit}{section.1}% 7
+\BOOKMARK [1][-]{section.2}{Estimation}{}% 8
+\BOOKMARK [2][-]{subsection.2.1}{Inversion of the Market Share Function}{section.2}% 9
+\BOOKMARK [3][-]{subsubsection.2.1.1}{Inversion of Logit}{subsection.2.1}% 10
+\BOOKMARK [3][-]{subsubsection.2.1.2}{Inversion of Nested Logit}{subsection.2.1}% 11
+\BOOKMARK [3][-]{subsubsection.2.1.3}{Inversion of Probit and RCML}{subsection.2.1}% 12
+\BOOKMARK [2][-]{subsection.2.2}{Estimation with Market-Level Data: Demand Side}{section.2}% 13
+\BOOKMARK [3][-]{subsubsection.2.2.1}{GMM for Logit and Nested Logit}{subsection.2.2}% 14
+\BOOKMARK [3][-]{subsubsection.2.2.2}{GMM for Probit and RMCL}{subsection.2.2}% 15
+\BOOKMARK [3][-]{subsubsection.2.2.3}{Asymptotics}{subsection.2.2}% 16
+\BOOKMARK [2][-]{subsection.2.3}{Estimation with Market-Level Data: Supply Side}{section.2}% 17
+\BOOKMARK [1][-]{section.3}{Application: Berry Levinsohn Pakes \(1995\)}{}% 18
+\BOOKMARK [1][-]{section.4}{Identification}{}% 19
+\BOOKMARK [2][-]{subsection.4.1}{Intuition}{section.4}% 20
+\BOOKMARK [2][-]{subsection.4.2}{Nonparametric Identification - Market-Level Data}{section.4}% 21
+\BOOKMARK [2][-]{subsection.4.3}{Some Parametric Examples}{section.4}% 22
+\BOOKMARK [3][-]{subsubsection.4.3.1}{Logit}{subsection.4.3}% 23
+\BOOKMARK [3][-]{subsubsection.4.3.2}{Nested Logit}{subsection.4.3}% 24
+\BOOKMARK [3][-]{subsubsection.4.3.3}{Mixed Logit}{subsection.4.3}% 25
+\BOOKMARK [3][-]{subsubsection.4.3.4}{Summary}{subsection.4.3}% 26
+\BOOKMARK [2][-]{subsection.4.4}{Nonparametric Identification - Agent-Level Data}{section.4}% 27
+\BOOKMARK [1][-]{section.5}{Estimation with Agent-Level Data}{}% 28
+\BOOKMARK [1][-]{section.6}{Application: Goolsbee and Petrin \(2004\)}{}% 29
+\BOOKMARK [2][-]{subsection.6.1}{Overview}{section.6}% 30
+\BOOKMARK [2][-]{subsection.6.2}{Demand System}{section.6}% 31
+\BOOKMARK [2][-]{subsection.6.3}{Supply Side Basics}{section.6}% 32
+\BOOKMARK [2][-]{subsection.6.4}{Estimation Basics}{section.6}% 33

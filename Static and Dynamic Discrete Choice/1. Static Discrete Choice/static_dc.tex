@@ -1,0 +1,559 @@
+\documentclass[11pt]{article}
+
+
+\usepackage[paper=a4paper,margin=0.75in]{geometry}
+\usepackage{setspace}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{mathrsfs}
+\usepackage{bbm, bm}
+\usepackage[bottom]{footmisc}
+
+{
+	\newtheorem{assumption}{\textit{Assumption}}
+	\newtheorem{definition}{\textit{Definition}}
+	\newtheorem{theorem}{\textit{Theorem}}
+}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\rhead{\today}
+\lhead{Static Discrete Choice}
+
+\newcommand\blfootnote[1]{%
+	\begingroup
+	\renewcommand\thefootnote{}\footnote{#1}%
+	\addtocounter{footnote}{-1}%
+	\endgroup
+}
+
+\setlength{\parindent}{0em}
+
+\begin{document}
+\onehalfspacing
+
+\section{Models of Demand for Differentiated Products}
+
+\blfootnote{These notes are based on Howard Smith's lectures from the 2018-2019 academic year.\\
+Of course, this is our interpretation of the material Howard presented. Good content is his; mistakes are ours.}
+
+\vspace{-1cm}
+\subsection{Basics}
+
+Differentiated goods set $\mathscr{J}$ with $card(\mathscr{J}) = J$; price vector $\mathbf{p} = \{p_1, \dots, p_J\}^\intercal$ and market share vector $\mathbf{s} = \{s_1, \dots, s_J\}^\intercal$; $\mathbf{x}_j$ is the vector of good $j$ characteristics.
+Good $j=0$ is the \textit{outside good}, a construct used to allow substitution away from all goods in $\mathscr{J}$. \\
+
+$\mathbf{q} \equiv \mathbf{q}(\mathbf{p},\theta)$ is the demand system parameterised by $\theta$; the functional form of $\mathbf{q}$ is chosen such that it is \textbf{flexible} (Lau, 1986: ``price elasticities are capable of arbitrary values subject only to the constraint of theoretical consistency''), yet estimable: for example, it is not possible to estimate an unrestricted $J \times J$ matrix of cross-price effects with $J$ observations, hence the need for \textbf{restrictions on the functional form} (which limit flexibility).
+
+\subsection{Parametric Assumptions and the Mean Utility Index}
+\begin{equation}
+	\label{parass}
+	u_{ij} = (\beta + \nu_i)\mathbf{x}_j - \alpha p_j + \xi_j + \varepsilon_{ij}
+\end{equation}
+\begin{itemize}
+	\item $\beta$ is the marginal utility from characteristics $\mathbf{x}_j \in \mathbb{R}^K$.
+	\item $\nu_i$ is consumer $i$'s taste deviation, from a pre-specified distribution $H(\mu_\nu,\sigma_\nu)$
+	\item $\alpha$ is the marginal utility of money
+	\item $\xi_j$ is the mean utility from $j$'s \textbf{unobserved} characteristics
+	\item $\varepsilon_{it}$ is a random valuation of $j$ across $i$ with distribution $G(\mu_\varepsilon, \sigma_\varepsilon)$
+\end{itemize}
+
+Equation \eqref{parass} can be decomposed in individual- and good-specific components:
+\begin{equation}
+	\label{mui}
+	u_{ij} = \underbrace{\beta\mathbf{x}_j - \alpha p_j + \xi_j}_{\delta_j} + \nu_i\mathbf{x}_j + \varepsilon_{ij}
+\end{equation}
+
+Since we only care about the ordinal, rather than the cardinal, implications of our utility function (consumers choose based on the \textit{ranking} of goods, not on their utility `number'), the utility of all goods can be normalised based on the utility of a \textit{num\'{e}raire} good.
+In this case, it is particularly convenient to take the \textbf{excluded good $j = 0$ as \textit{num\'{e}raire}}: in particular, we make the relatively harmless assumption that $u_{i0} = 0 + \varepsilon_{i0}$.
+
+In general, market shares will be defined as
+\begin{equation}
+	\bm{s(\delta, \sigma)} = \{s_1(\bm{\delta, \sigma}), \dots, s_J(\bm{\delta, \sigma})\} \text{ where }
+	s_j(\bm{\delta, \sigma}) = \text{Pr}(u_{ij} > u_{ik} ~\forall~ k \neq j)
+\end{equation}
+
+and, assuming for the moment that $\nu_i = 0 ~\forall~ i$,
+
+\begin{equation}
+	\begin{gathered}
+	\label{pr_G}
+	\text{Pr}(u_{ij} > u_{ik} ~\forall~ k \neq j) = \int_\varepsilon \text{Pr}(\varepsilon_{ik} < \delta_{j} - \delta_k + \varepsilon_{ij} ~\forall~ k \neq j | \varepsilon_{ij}) g(\varepsilon_{ij}) d\varepsilon_{ij} \\
+	\overset{i.i.d.}{=} \int_{\varepsilon} \prod_{j \neq k} G(\delta_{j} - \delta_k + \varepsilon_{ij}) g(\varepsilon) d\varepsilon
+	\end{gathered}
+\end{equation}
+
+which shows the necessity for assumptions on $G(\cdot)$ to identify parameters in $\delta(\cdot)$.
+
+\subsection{Probit}
+
+$\{\varepsilon_{i1}, \dots, \varepsilon_{iJ}\} \sim N(0, \Sigma)$. The probability of choosing $j$ is
+\begin{equation}
+	\text{Pr}(u_{ij} > u_{ik} ~\forall~ k \neq j) = \int_\varepsilon \mathbbm{1}\{ \delta_j + \epsilon_{ij} > \delta_k + \varepsilon_{ik}, ~\forall~ k \neq j \} f(\varepsilon) d \varepsilon
+\end{equation}
+where $f(\cdot)$ is a multivariate Normal density. The issue with Probit is that the integral must be simulated and the number of parameters in $\Sigma$ might be too many if the matrix is left unrestricted ($\frac{J(J-1)}{2}$ in principle).
+
+\subsection{Logit}
+
+The classic and most widely used assumption is that $\varepsilon_{ij}$ is i.i.d. Extreme Value Type 1 (EVT-1) distributed.
+The EVT-1 distribution is characterised as
+\begin{equation*}
+		G^{\text{EVT1}}(x) = exp(-exp(-x)) \hspace{2cm} g^{\text{EVT1}}(x) = exp(-x) exp(-exp(-x))
+\end{equation*}
+for which $\sigma_\varepsilon$ does not have to be estimated, as mean and variance are fixed.
+
+Equation \eqref{pr_G} under EVT-1 is
+
+\begin{equation*}
+	\begin{gathered}
+	s_j(\bm{\delta, \sigma}) =	\int_\varepsilon \prod_{j \neq k} e^{-e^{-(\delta_{j} - \delta_k + \varepsilon_{ij})}} e^{-\varepsilon_{ij}} e^{-e^{-\varepsilon}} d\varepsilon = \int_\varepsilon \prod_{j} e^{-e^{-(\delta_{j} - \delta_k + \varepsilon_{ij})}} e^{-\varepsilon_{ij}} d\varepsilon
+	\end{gathered}
+\end{equation*}
+which, after some tedious derivation involving a change of variable, implies\footnote{The same holds for an arbitrary subset $\mathscr{J}'$ of $\mathscr{J}$.}
+\begin{equation}
+	s_j(\bm{\delta, \sigma}) = \frac{e^{\delta_j}}{\sum_{k \in \mathscr{J}} e^{\delta_k} }
+\end{equation}
+Importantly, the distributional assumption of the logit model implies the following for \textbf{expected maximum utility} from choice set $\mathscr{J}$:
+\begin{equation}
+	\label{logsum}
+	\mathbb{E}_\varepsilon [\max_{j \in \mathscr{J}}(\delta_j + \varepsilon_{ij})] = \ln \sum_{j \in \mathscr{J}} e^{\delta_j}
+\end{equation}
+
+While computationally attractive, the logit model carries a number of theoretically unattractive implications:
+\begin{enumerate}
+	\item \textbf{All new products increase expected utility}. From \eqref{logsum}, $e^{\delta_j} > 0 $ for any value of $\delta_j$.
+	\item \textbf{Independence of Irrelevant Alternatives}. $\frac{s_k}{s_j}, ~\forall~ k,j \in \mathscr{J}$ depends only on the characteristics of the two goods, and hence the relative popularity of two goods is \textbf{by assumption} unaffected by changes in $\mathscr{J}$ and by the characteristics of all goods that are not $k, j$.
+	\item \textbf{Inflexible price elasticities}: $\frac{\partial s_j}{\partial p_k} = \frac{\partial s_j}{\partial \delta_k}\frac{\partial \delta_k}{\partial p_k} = - \frac{e^{\delta_j + \delta_k}}{(\sum_{\ell \in \mathscr{J}} e^{\delta_\ell})^2}(-\alpha) = \alpha s_j s_k$
+	and $\frac{\partial s_j}{\partial p_k} \frac{p_k}{s_j} = \alpha p_k s_k$.
+\end{enumerate}
+
+\subsection{Nested Logit}
+
+Suppose $\mathscr{J}$ can be partitioned in $r = 1, \dots, R$ groups $\mathscr{J}_r$, with each good in only one group.
+We assume that the outside good $j = 0 $ sits alone in its outside good group $r = 0$.
+
+The error terms are conveniently assumed to have the following Generalised Extreme Value distribution: for $j \in \mathscr{J}_r$, errors for each group $r$ are drawn from
+\begin{equation}
+	G(\varepsilon_{i1}, \dots, \varepsilon_{iJ_r}) = \exp \bigg[ - \sum_r^R \big( \sum_{j \in \mathscr{J}_r} e^{- \frac{\varepsilon_{ij}}{1 - \sigma_r}} \big)^{1 - \sigma_r} \bigg]
+\end{equation}
+
+where $\sigma_r \in (0,1)$. If $\sigma_r = 0 ~\forall~ r$, the model boils down to the Logit model presented above.
+
+As noted in Berry (1994), the GEV disturbance can be decomposed as the sum of two terms, a group-specific error and a within-group Logit error:
+\begin{equation}
+	u^{GEV}_{ij} = \delta_j + \varepsilon_{ir} + (1 - \sigma) \varepsilon_{ij | r}
+\end{equation}
+
+which implies that market share of good $j$ \textbf{within group} $r$ is defined as in the Logit model:
+\begin{equation}
+	\label{nl_2tier}
+	s_{j \in \mathscr{J}_r} = \text{Pr}(u^{GEV}_{ij} > u^{GEV}_{ik} ~\forall~ k \in \mathscr{J}_r) \overset{i.i.d.}{=} \int_\varepsilon \prod_{k \neq j \in \mathscr{J}_r} G^{\text{EVT1}}(\frac{\delta_j - \delta_k}{1- \sigma_r} + \varepsilon_{ij}) g^{\text{EVT1}}(\varepsilon) d\varepsilon
+\end{equation}
+and thus the within-group Logit behaviour implies
+\vspace{-.25cm}
+\begin{equation}
+ \label{nl_2tier_sol}
+	s_{j \in \mathscr{J}_r} = \frac{s_j}{s_r} = \frac{e^{\frac{\delta_j}{1 - \sigma_r}}}{\sum_{\ell \in \mathscr{J}_r}e^{\frac{\delta_\ell}{1 - \sigma_r}}}
+\end{equation}
+Furthermore, it can be shown that the model implies a choice \textbf{between groups} that also follows a Logit form:
+\begin{equation}
+	s_r = \frac{\big(\sum_{\ell \in \mathscr{J}_r}e^{\frac{\delta_\ell}{1 - \sigma_r}}\big)^{1 - \sigma_r}}{\sum_{r' \in R}\big(\sum_{\ell' \in \mathscr{J}_{r'}}e^{\frac{\delta_{\ell'}}{1 - \sigma_{r'}}}\big)^{1 - \sigma_{r'}}}
+\end{equation}
+whence the name \textbf{Nested Logit}: the model is effectively a two-tier Logit model.
+The share of good $j$ in the \textbf{total market} is defined from \eqref{nl_2tier_sol}
+\begin{equation}
+	\label{nl_s}
+	s_j \equiv s_{j \in \mathscr{J}_r}s_r = \frac{e^{\frac{\delta_j}{1 - \sigma_r}}}{\sum_{\ell \in \mathscr{J}_r}e^{\frac{\delta_\ell}{1 - \sigma_r}}}s_r
+\end{equation}
+
+Nested Logit relaxes the assumptions of Logit in a very \textit{ad hoc} way: for example, \textbf{IIA is relaxed for goods that do not belong to the same group}; it still holds for good belonging to the same group.
+However, \textbf{groups not directly compared do not matter} - IIA at the group level.
+
+\subsection{(Random Coefficients) Mixed Logit}
+\begin{equation}
+	u_{ij} = (\beta + \sigma_{\nu}\nu_i) \mathbf{x}_j  - \alpha p_j + \xi_j + \varepsilon_{ij}
+\end{equation}
+where $\varepsilon_{ij}$ is EVT1-distributed and $\nu_i \sim H(\cdot)$ (usually normally distributed) with scaling parameter $\sigma_\nu$ to be estimated. \\
+
+Conditional on $\nu_i$, we have probabilities defined as in Logit, and market shares obtained by integrating over $\nu_i$:
+\begin{equation}
+	 \text{Pr}(u_{ij} > u_{ik} ~\forall~ k \neq j | \nu_i) = \frac{e^{\delta_j + \sigma_{\nu}\nu_i\mathbf{x}_j}}{\sum_{\ell \in \mathscr{J}} e^{\delta_\ell + \sigma_{\nu}\nu_\ell \mathbf{x}_\ell} }
+	 \Rightarrow s_j (\bm{\delta, \sigma}) = \int_{\nu} \frac{e^{\delta_j + \sigma_{\nu}\nu_i\mathbf{x}_j}}{\sum_{\ell \in \mathscr{J}} e^{\delta_\ell + \sigma_{\nu}\nu_\ell \mathbf{x}_\ell}} h(\nu) d\nu
+\end{equation}
+which, since no analytical solution is available for usual specifications of $H(\cdot)$, requires simulation as
+\begin{equation}
+	\tilde{s}_j (\bm{\delta, \sigma}) = \frac{1}{T} \sum_t^T \frac{e^{\delta_j + \sigma_{\nu}\nu_i\mathbf{x}_j}}{\sum_{\ell \in \mathscr{J}} e^{\delta_\ell + \sigma_{\nu}\nu_\ell \mathbf{x}_\ell}}
+\end{equation}
+where $t$ denotes draw $t$ out of $T$ from the theoretical support of $h(\nu)$.
+
+\section{Estimation}
+
+\subsection{Inversion of the Market Share Function}
+
+Discrete choice models can be generally written as
+\begin{equation*}
+	s_j = s_j(\bm{x, p , \xi}; \theta) =  s_j(\bm{\delta}, \sigma)
+\end{equation*}
+where $\theta$ is a vector of parameters and the last equality follows from the Mean Utility Index formulation.
+Note $s_j$ is increasing in $\xi_j$ and decreasing in $\xi_k ~\forall~ k \neq j$.
+
+For estimation, given $s_j(\bm{\delta}, \sigma)$, we aim to separate $\xi_j$ as a \textbf{residual} to be used in defining the identifying conditions.
+
+This requires \textbf{invertibility} of $s(\cdot)$: if $s(\bm{\delta}, \sigma)$ is invertible, there exists a unique $\delta(\bm{s}, \sigma)$ and the Mean Utility Index formulation implies $ \delta(\bm{s}, \sigma) - (\beta \bm{x} - \alpha p_j) = \bm{\xi}(\bm{s}, \sigma)$. \\
+
+Berry (1994) establishes the following \textbf{conditions for invertibility of the share function}:\footnote{Berry notes that conditions 1 and 2 are \textit{sufficient} for inversion; condition 3 seems to follow from condition 2.}
+\begin{enumerate}
+	\item $\bm{s}(\bm{\delta}, \sigma)$ is differentiable in $\bm{\delta}$. This is generally satisfied by models with a continuous random utility $(u_{ij} - \delta_j)$, as all the ones we consider;
+	\item $\bm{s}(\bm{\delta}, \sigma)$ obeys $\frac{\partial s_j}{\partial \delta_j} > 0$ and $\frac{\partial s_j}{\partial \delta_k} < 0$ $\forall ~ j \neq k$, which is implicit in the modelling of substitute choices;
+	\item $s_j(\bm{\delta}, \sigma) \rightarrow 1$ as $\delta_j \rightarrow \infty$ and $s_j(\bm{\delta}, \sigma) \rightarrow 0$ as $\delta_j \rightarrow - \infty$.
+\end{enumerate}
+
+under these conditions, there is a unique inversion $\delta(\bm{s}, \sigma)$ yielding residual $\bm{\xi}(\bm{s}, \sigma) = \delta(\bm{s}, \sigma) - (\beta \bm{x}_j - \alpha p_j)$. Let us show that these conditions apply in the models presented above.
+
+\subsubsection{Inversion of Logit}
+$s_j$ is 1. differentiable in $\delta_j$; 2. increasing in $\delta_j$ ad decreasing in $\delta_k$; 3. obedient to $\delta$-limit conditions.
+\begin{equation*}
+	s_j(\bm{\delta, \sigma}) = \frac{e^{\delta_j}}{\sum_{k \in \mathscr{J}} e^{\delta_k} } \Leftrightarrow \ln s_j(\bm{\delta, \sigma}) = \delta_j - \ln \sum_{k \in \mathscr{J}} e^{\delta_k}
+\end{equation*}
+hence (note that in this case there are no non-linear parameters $\bm{\sigma}$)
+\begin{equation}
+	\delta_j = \beta \bm{x}_j - \alpha p_j + \xi_j = \ln s_j(\bm{\delta}) - \ln s_0(\bm{\delta}) \Leftrightarrow \xi_j = \ln s_j(\bm{\delta}) - \ln s_0(\bm{\delta}) - \beta \bm{x}_j + \alpha p_j
+\end{equation}
+
+\subsubsection{Inversion of Nested Logit}
+Just as in the case of Logit, the requirements are satisfied. Then from \eqref{nl_s}
+\begin{equation*}
+	\ln s_j = \ln s_{j \in \mathscr{J}_r} + \ln s_r = \frac{\delta_j}{1 - \sigma_r} - \sigma_r \ln \big(\sum_{\ell \in \mathscr{J}_r}e^{\frac{\delta_\ell}{1 - \sigma_r}}\big) -
+	\ln \sum_{r' \in R}\big(\sum_{\ell' \in \mathscr{J}_{r'}}e^{\frac{\delta_{\ell'}}{1 - \sigma_{r'}}}\big)^{1 - \sigma_{r'}}
+\end{equation*}
+and
+\begin{equation*}
+	\ln s_0 = \underbrace{\frac{\delta_0}{1 - \sigma_0}}_{=0 \text{ as } \delta_0 = 0} -
+	\ln \sum_{r' \in R}\big(\sum_{\ell' \in \mathscr{J}_{r'}}e^{\frac{\delta_{\ell'}}{1 - \sigma_{r'}}}\big)^{1 - \sigma_{r'}}
+\end{equation*}
+one obtains
+\begin{equation*}
+	\ln s_j - \ln s_0 = \frac{\delta_j}{1 - \sigma_r} - \sigma_r \ln \big(\sum_{\ell \in \mathscr{J}_r}e^{\frac{\delta_\ell}{1 - \sigma_r}}\big)
+\end{equation*}
+and, noting that $s_r = s_0 \times (\sum_{\ell \in \mathscr{J}_r}e^{\frac{\delta_\ell}{1 - \sigma_r}})^{1- \sigma_r}$, we have
+\begin{equation}
+	\begin{gathered}
+			\ln s_j - \ln s_0 = \frac{\delta_j}{1 - \sigma_r} - \frac{\sigma_r}{1-\sigma_r} (\ln s_r - \ln s_0) \\
+			(1 - \sigma_r)(\ln s_j - \ln s_0) = \delta_j - \sigma_r(\ln s_r - \ln s_0) \Leftrightarrow \ln s_j - \ln s_0 = \delta_j - \sigma_r(\ln s_r - \ln s_j)
+	\end{gathered}
+\end{equation}
+and
+\begin{equation}
+	\xi_j = \delta_j - \beta \bm{x}_j + \alpha p_j  = \ln s_j - \ln s_0 - \sigma_r(\ln s_r - \ln s_j) - \beta \bm{x}_j + \alpha p_j
+\end{equation}
+
+\subsubsection{Inversion of Probit and RCML}
+
+While no analytical form is available for $\delta(\bm{s}, \sigma)$, Berry Levinsohn and Pakes (1995) show that the following is a contraction mapping:
+\begin{equation}
+	\bm{\delta}_{t} = \bm{\delta}_{t-1} + \ln \bm{s} - \ln \bm{\tilde{s}}(\bm{\delta}_{t-1}, \sigma)
+\end{equation}
+where $t$ indexes loop iterations and $\tilde{s}(\cdot)$ is the computed share from previous loop (or from the initial guess if $t=1$).
+
+Being a contraction mapping, the sequence $\{\delta, d(\delta), d(d(\delta)), \dots\}$ converges to a unique fixed point $\delta = d(\delta)$.
+The contraction mapping returns a vector $\bm{\delta}(\bm{s}, \bm{\sigma})$ for which $\bm{\xi}(\bm{s}, \theta) = \bm{\delta}(\bm{s}, \bm{\sigma}) - (\bm{\beta} \bm{x} - \bm{\alpha} \bm{p})$.
+Note that now $\bm{\delta}(\cdot)$ depends on all market shares.
+
+\subsection{Estimation with Market-Level Data: Demand Side}
+
+Data available on market shares $s_j$, product characteristics $\bm{x}_j$, and prices $p_j$ for $j \in \mathscr{J}$. Can have data for multiple markets (periods and/or cities) but not strictly necessary. $s_0$ being a construct, one usually needs to impose some assumption on it. \\
+
+Estimation proceeds by GMM: given residuals
+\begin{equation}
+	\bm{\xi}(\theta) = \bm{\delta}(\bm{s}, \bm{\sigma}) - \bm{\beta}\bm{x} + \bm{\alpha p}
+\end{equation}
+one defines identifying restrictions as a function of instruments $\bm{Z}$ indexed by $m$ assumed orthogonal to $\bm{\xi}$, i.e.
+\begin{equation}
+	\mathbb{E}[Z_m\bm{\xi}(\theta_0)] = 0 \text{ with sample counterpart } \vartheta_m(\theta) \equiv \frac{1}{J}\sum_j^J[Z_{mj}\bm{\xi_j}(\theta)] = 0
+\end{equation}
+stacking these moments as $\bm{\vartheta}(\theta) = \{\vartheta_1(\theta), \dots, \vartheta_M(\theta)\}^\intercal$ the GMM estimator is
+\begin{equation}
+	\hat{\theta} \in \arg \min_{\theta \in \Theta} \bm{\vartheta}(\theta)^\intercal W_J \bm{\vartheta}(\theta)
+\end{equation}
+with a $W_J$ weighting matrix.
+
+\subsubsection{GMM for Logit and Nested Logit}
+
+For these two models we have
+
+\begin{equation*}
+	\begin{gathered}
+			\xi_j = \ln s_j - \ln s_0 - \beta \bm{x}_j + \alpha p_j \\
+			\xi_j = \ln s_j - \ln s_0 - \beta \bm{x}_j + \alpha p_j + \sigma_r\underbrace{(\ln s_j - \ln s_r)}_{\equiv \ln s_{j \in \mathscr{J}_r}}
+	\end{gathered}
+\end{equation*}
+hence, defining $Y_j \equiv \ln s_j - \ln s_0$, $X_j = [\bm{x}_j, p_j]$ for Logit, and $X_j = [\bm{x}_j, p_j, \ln s_{j \in \mathscr{J}_r}]$ for Nested Logit, one has the linear GMM estimator
+\begin{equation}
+	\hat{\theta} = [X^\intercal Z W_J Z^\intercal X]^{-1}[X^\intercal Z W_J Z^\intercal Y]
+\end{equation}
+
+\subsubsection{GMM for Probit and RMCL}
+
+As an analytical solution is not available, we solve by iteration:
+\begin{enumerate}
+	\item Start from an initial vector $\theta_0 = (\sigma, \beta, \alpha)$ at $t=0$;
+	\item Compute $\bm{\delta}_t$ using the contraction mapping $\bm{\delta}_{t} = \bm{\delta}_{t-1} + \ln \bm{s} - \ln \bm{\tilde{s}}(\bm{\delta}_{t-1}, \sigma)$ until convergence;
+	\item Compute residual $\bm{\xi}(\theta_t)$ and obtain $\hat{\theta}^{GMM} \equiv \arg\min_\theta \bm{\vartheta}(\theta_t)^\intercal W_J \bm{\vartheta}(\theta_t)$;
+	\item Replace $\theta_{t-1}$ with $\hat{\theta}^{GMM}$ and go back to step 2; repeat until GMM criterion is minimised.
+\end{enumerate}
+
+\subsubsection{Asymptotics}
+The asymptotics are not straightforward as in the $N \rightarrow  \infty$ case, as changing $J$ will mechanically change the market shares of \textbf{all other goods}.
+Furthermore, competition should force prices down.
+These complications are discussed in Berry Linton Pakes (2004) as well as the review article by Ackerberg et al. (2007).
+
+\subsection{Estimation with Market-Level Data: Supply Side}
+
+A similar GMM estimator can be used to solve for the supply side of the model, either separately from demand or jointly.
+We impose an additive parametric form on the marginal cost as a function of exogenous cost shifter(s) $w_j$,
+\begin{equation}
+	mc_j = \gamma w_j + \omega_j \hspace{2cm} \mathbb{E}(\omega_j | w_j) = 0
+\end{equation}
+Profit maximisation implies
+\begin{equation}
+	\frac{\partial \pi_j}{\partial p_j} \equiv \frac{\partial[s_j(p_j - mc_j)]}{\partial p_j} = \frac{\partial s_j}{\partial p_j}(p_j - mc_j) + s_j = 0 \Leftrightarrow p_j = \gamma w_j + \omega_j - s_j\big(\frac{\partial s_j}{\partial p_j}\big)^{-1}
+\end{equation}
+which can be rearranged to isolate $\omega_j$.
+Note that $\omega_j$ will depend on $\theta$ via market shares.
+From the orthogonality condition
+\begin{equation}
+	\mathbb{E}(\omega_j(\gamma, \theta) | w_j) = 0 \text{ with sample counterpart } \varphi(\gamma, \theta) \equiv  \frac{1}{J}\sum_j^J\omega_j(\gamma, \theta) w_j
+\end{equation}
+generating additional moments that can be stacked with $\bm{\vartheta}(\theta)$ as $\bm{\vartheta}^*(\theta, \gamma) = \{\bm{\vartheta}(\theta), \varphi(\gamma, \theta)\}^\intercal$; this yields the GMM estimator
+\begin{equation}
+		(\hat{\theta}, \hat{\gamma}) \in \arg \min_{\theta, \gamma} \bm{\vartheta}^*(\theta)^\intercal W_J \bm{\vartheta}^*(\theta)
+\end{equation}
+which can be estimated either directly or by iteration depending on the demand side.
+
+\section{Application: Berry Levinsohn Pakes (1995)}
+
+Analysis of the market of new cars: US-year treated as single market. Since very few people buy a car each year, \textbf{standard logit model would estimate very large substitution toward the `no-buy/used-car' outside good}. Slightly different specification from ours, as the authors specify $\delta_j$ as a function of $\alpha(y_i - p_j)$ -- i.e. disposable income after purchase -- instead of $\alpha p_j$. \\
+
+The authors estimate a standard RMCL model with supply side moments; they draw income from Census distributions. Instruments: car's own characteristics (taken as exogenous); characteristics of cars from the same maker; characteristics of cars from all makers.
+
+\section{Identification}
+
+\subsection{Intuition}
+
+Three traditional sets of instruments used to identify the set of \textbf{linear parameters} $(\alpha, \beta)$:
+\begin{enumerate}
+	\item \textbf{BLP Instruments}: characteristics of products sold by rival firms, which affect own prices;
+	\item \textbf{Marginal Cost Shifters}: Variables that shift $p_j$ exclusively via $mc_j$, not via utility.
+	\item \textbf{Hausman instruments}: Price of the same product in other markets, under the assumption that cost shocks are common but demand shocks are independent.
+\end{enumerate}
+
+Identification of \textbf{non-linear parameters} $\bm{\sigma}$ is also of particular interest, as they are effectively responsible for cross-product utility interdependence and deviations from IIA.
+Intuitively, $\sigma$ can be identified via observed deviations from IIA in substitution patterns; alternatively, identification can be achieved from data on `second choices' indicated in surveys. \\
+Assuming a mixed logit functional form, the \textbf{`log-sum' result} implies a market share for first choice $j$ (for a number of draws $\Xi$)
+\begin{equation}
+	\tilde{s}_j(\bm{\delta, \sigma}) = \frac{1}{\Xi} \sum_i^\Xi \frac{e^{d_j + \sigma_\nu \nu_i \bm{x}_j}}{\sum_{\ell \in \mathscr{J}}e^{d_\ell + \sigma_\nu \nu_i \bm{x}_\ell}}
+\end{equation}
+and a market share for second choice $k$, in absence of $j$,
+\begin{equation}
+	\tilde{s}_k(\bm{\delta, \sigma}) = \frac{1}{\Xi} \sum_i^\Xi \frac{e^{d_k + \sigma_\nu \nu_i \bm{x}_k}}{\sum_{\ell \in \mathscr{J}_{ \setminus j}}e^{d_\ell + \sigma_\nu \nu_i \bm{x}_\ell}}
+\end{equation}
+whence it can be observed that the mismatch between predicted correlation of the two choice shares and actual correlation can provide information on $\sigma$.
+
+In analogue fashion, one can use data on \textbf{repeated choices}: if a subset of the goods is unavailable for some periods, can observe forced substitution patterns and their relationship with good characteristics.
+
+\subsection{Nonparametric Identification - Market-Level Data}
+
+Berry and Haile (2014) prove that $(\alpha, \beta, \bm{\sigma})$ are identified \textbf{nonparametrically} - i.e. their identification does not rely on the parametric assumptions made so far.
+The necessary requirement is the existence of a \textbf{`special regressor'} $x$ that does not have a random coefficient. \\
+
+Assume availability of market-level data on market shares, characteristics and prices for $J$ goods. The specification is given by
+\begin{equation}
+	\label{bh_spec}
+	u_{ij} = x^{(1)}_j + \beta_i\bm{x}^{(2)}_j - \alpha p_j + \xi_j + \varepsilon_{ij}
+\end{equation}
+where $x^{(1)}$ is the special regressor, whose coefficient is normalised to 1, and $\mathbb{E}(\xi_j |x^{(1)}_j,\bm{x}^{(2)}_j) = 0$.\\
+
+Identification is proved in three steps:
+
+\subsubsection*{Step 1: Index}
+Given \eqref{bh_spec}, define the index $\delta_j = x_j + \xi_j$, excluding $p_j$ and $\bm{x}^{(2)}$.
+
+\subsubsection*{Step 2: Invert}
+Under the conditions in Berry (1994), indices $\bm{\delta}$ can be isolated from the rest of the utility function as $\bm{\delta} = d(\bm{s,p})$; in turn, this can be rewritten as
+\begin{equation}
+	\label{bh_inv}
+	x_j = d(\bm{s,p}) - \xi_j
+\end{equation}
+
+which has a separable error $\xi_j$ and two sets of endogenous variables $(\bm{s, p})$.
+
+\subsubsection*{Step 3: Instrument}
+
+Use the identification argument of Newey and Powell (2003) for nonparametric specifications of the form
+\begin{equation}
+	\label{np_spec}
+	y = f(\bm{x}) + \bm{\xi} \hspace{2cm} \mathbb{E}[\bm{\xi}| \bm{Z}] = 0
+\end{equation}
+for which Newey and Powell prove identification provided sufficient relevance of the instrument -- i.e. provided that any two functions of $\bm{x}$ can be distinguished by variation in $\bm{Z}$ ($\bm{Z}$ is `complete' in $\bm{x}$).
+Note that \eqref{bh_inv} is not exactly amenable to \eqref{np_spec}, as we have the exogenous regressor on the LHS; however, Berry and Haile (2014) show that Newey and Powell's proof can be used to establish identification of $d(\cdot)$ under analogous completeness and exclusion conditions.
+
+\subsection{Some Parametric Examples}
+
+\subsubsection{Logit}
+
+\begin{equation*}
+	\begin{gathered}
+			\xi_j = \ln s_j - \ln s_0 - \beta \bm{x}_j + \alpha p_j \Rightarrow x^{(1)}_j = \frac{1}{\beta^{(1)}}(\ln s_j - \ln s_0) - \frac{\beta^{(2)}}{\beta^{(1)}} \bm{x}^{(2)}_j + \frac{\alpha}{\beta^{(1)}} p_j -  \frac{1}{\beta^{(1)}} \xi_j
+	\end{gathered}
+\end{equation*}
+
+need instruments for $(\ln s_j - \ln s_0)$ and for $p_j$.
+
+\subsubsection{Nested Logit}
+
+\begin{equation*}
+	\begin{gathered}
+			x^{(1)}_j = \frac{1}{\beta^{(1)}}(\ln s_j - \ln s_0) - \frac{\beta^{(2)}}{\beta^{(1)}} \bm{x}^{(2)}_j + \frac{\alpha}{\beta^{(1)}} p_j -  \frac{1}{\beta^{(1)}} \xi_j - \frac{\sigma_r}{\beta^{(1)}} \ln s_{j \in \mathscr{J}_r}
+	\end{gathered}
+\end{equation*}
+
+now we need instruments for $(\ln s_j - \ln s_0)$, for $p_j$, \textbf{and} for $\ln s_{j \in \mathscr{J}_r}$.
+More general substitution patterns require availability of more instruments.
+
+\subsubsection{Mixed Logit}
+\vspace{-.25cm}
+\begin{equation}
+		u_{ij} = (\beta + \sigma_{\nu}\nu_i) \mathbf{x}_j  - \alpha p_j + \xi_j + \varepsilon_{ij}
+\end{equation}
+yields a market share function $\bm{s} = \bm{s}(\delta, \bm{p}, \sigma)$ which can be inverted as	$x_j = d_j(\bm{s}, \bm{p}, \sigma) - \xi_j$, which shows that now instruments for \textbf{vectors} $(\bm{s,p})$ are necessary; $\bm{s}$ can be instrumented by $\bm{x}$.
+
+\vspace{-.25cm}
+\subsubsection{Summary}
+
+Although the literature has always highlighted the necessity of instrumenting for endogenous prices, Berry and Haile show that this is not enough -- that \textbf{one also needs to instrument for market shares}. The construction of the three-step process provides an instrument for $s_j$ in $x_j$.
+
+\subsection{Nonparametric Identification - Agent-Level Data}
+
+Berry and Haile also analyse the case in which one possesses data on product characteristics, product prices, purchase choices, and some variable $z_{ijt}$ that varies at the (individual $\times$ good $\times$ market) level.
+\vspace{-.25cm}
+\begin{equation}
+		u_{ijt} = (z_{ijt} + \xi_{jt}) - \alpha p_{jt} + \varepsilon_{ijt}
+\end{equation}
+where the coefficient on $z_{ijt}$ is normalised to 1 and $z_{ijt} + \xi_{jt} = \delta_{ijt}$. From the micro data, one observes conditional choice probabilities as a function of observed $\bm{\hat{z}}$, $\bm{s}_t(\bm{\hat{z}})$; in turn, for any share $s$ generated by some $\bm{\hat{z}}$ there exist at least one vector of characteristics $z^*_t(s)$ such that $s_t(z^*_t(s)) = s$. \\
+
+The identification argument in presence of micro data proceeds in \textbf{two broad steps}: first, variation in $z_{it}$ is used to obtain a scalar variable that is a function of $\xi_{jt}$ and prices; second, instrumental variables are used to identify parameters of the function and $\xi_{jt}$.
+\begin{enumerate}
+	\item Fix a probability vector $\bm{s}^*$ across markets;
+	\item Obtain $\bm{z}_t(\bm{s}^*) ~\forall~ t$;
+	\item Invert market share function $\bm{s}^* = \bm{s}(\delta_{it},\bm{p}_t)$ to obtain $\delta_{ijt} = d(\bm{s}^*,\bm{p}_t)$;
+	\item From $z_{ijt} + \xi_{jt} = \delta_{ijt}$ we have $\bm{z}_{jt}(\bm{s}^*) = d_t(\bm{s}^*,\bm{p}_t) - \xi_{jt}$;
+	\item Need to only instrument for $\bm{p}$ as $\bm{s}^*$ is fixed.\footnote{Instrumenting for market shares intuitively becomes redundant as variation in $z_{it}$ will identify variation in quantities. See Berry and Haile (2016, Section 4.1) for further discussion.}
+\end{enumerate}
+
+\section{Estimation with Agent-Level Data}
+\label{agentest}
+Random Sample of $N$ consumers indexed by $i$ belonging to $J$ markets indexed by $j$.
+Data on market characteristics, consumer characteristics, purchase decision $y_{ij}$. \\
+
+Given $u_{ij} = \delta_j + \sigma_\nu \nu_i \bm{x}_j + \varepsilon_{ij}$, the model yields a $P_{ij}(\theta, \bm{\sigma}, \bm{\xi} | \nu_i)$ as long as we specify a distribution for $\varepsilon_{ij}$.
+It is important to note that $\bm{\xi}$ and $\theta = (\alpha, \beta)$ \textbf{cannot separately be identified}, as each $P_{ij}$ is defined by a pair $(\alpha, \beta)$ that deterministically implies a value of $\xi$; we can at best identify $\delta$.
+As a result, we turn to a two-step method, the first step of which can be computed in two different ways. In the first step(s), we estimate $(\bm{\delta, \sigma})$; in the second step we obtain $\xi$ and estimate $(\alpha, \beta)$.
+
+\subsubsection*{Step 1.a -- Maximum Likelihood}
+
+The probability that $i$ chooses $j$ is defined as
+\begin{equation}
+	\text{Pr}_j(\bm{\delta}, \bm{\sigma}, \nu_i) = \int_\varepsilon \mathbbm{1}\{u_{ij} > u_{ik} ~\forall~ j \neq k\} d G(\varepsilon)
+\end{equation}
+
+Hence the MLE is the $(\bm{\delta, \sigma})$ vector that maximises the log-likelihood of observed market shares, i.e.
+\begin{equation}
+	\ln \mathscr{L}(\bm{\delta, \sigma}) = \sum_i^N \sum_j^J \mathbbm{1}\{y_{ij} = 1\} \ln P_{j}(\bm{\delta}, \bm{\sigma}, \nu_i)
+\end{equation}
+where, to speed up computation, one can separately obtain $\bm{\delta}$ as $\bm{\delta}(\bm{s, \sigma})$ via BLP contraction mapping.
+
+\subsubsection*{Step 1.b -- Generalised Method of Moments}
+
+Alternatively, with instruments $[Z^1_{ij}, \dots, Z^M_{ij}]$, $(\bm{\delta, \sigma})$ solve (given just-identification)
+\begin{equation}
+	\sum_i \sum_j \big[y_{ij} - P_{j}(\bm{\delta}(\bm{s, \sigma}), \bm{\sigma}, \nu_i) \big]Z^m_i = 0 ~\forall~ m
+\end{equation}
+
+The advantage of GMM over ML is that if the conditional probabilities $P_{ij} (\cdot| \nu_i)$ are \textbf{simulated}, ML will lead to inconsistent estimates.
+In fact, albeit simulated probabilities are a consistent estimator of the real probabilities, logarithmic transformations of the simulated probabilities are \textbf{not consistent estimators of log-probabilities} (although bias will shrink as the number of draws increases).
+
+\subsubsection*{Step 2 -- Estimation of Linear Parameters $(\alpha, \beta)$}
+
+Armed with $\bm{\delta}(\bm{s, \sigma})$ residuals are defined as
+\vspace{-.25cm}
+\begin{equation*}
+	\bm{\xi}(\alpha, \beta) = \bm{\delta} - \beta \bm{x} + \alpha \bm{p}
+\end{equation*}
+and, for instruments $[Z^1_{ij}, \dots, Z^M_{ij}]$, $(\alpha, \beta)$ can be computed via linear GMM\footnote{Linear GMM as the specification of the residual is undoubtedly linear; choice does not depend on distributional assumptions on $\varepsilon$.} using the instrument validity conditions as identifying restrictions:
+\begin{equation*}
+	\mathbb{E}[Z^m \bm{\xi}(\beta_0, \alpha_0)] = 0
+\end{equation*}
+
+\section{Application: Goolsbee and Petrin (2004)}
+
+	\subsection{Overview}
+	\begin{itemize}
+		\item Focuses on direct broadcast satellites (DBS) as a competitor to cable; i.e.\ the paper is about how entry changes structure of competition and thus affects consumer welfare. Prior to DBS, cable faced essentially no competition in the US; after 1996, the industry was essentially completely de-regulated too, so had it not been for DBS, US cable companies would have enjoyed regional monopolies.
+		\item Four options: Satellite (DBS); basic (BAS) and premium (PRE) cable; local antenna (ANT).
+		\item Use micro data (30 000 households, 317 markets).
+			\item Counterfactual analysis suggests that \textbf{without DBS entry cable prices would be about 15\% higher and cable quality would fall}. Estimate a \$2.5 billion aggregate welfare gain for satellite buyers, and about \$3 billion for cable subscribers: \textbf{large welfare gains from availability of a new good and from increased competition}.
+		\item \textbf{Strategy} in broad strokes: Estimate own- and cross-price elasticities for cable and satellite TV; model the supply side response of cable systems to the rise of DBS, examining how cable prices and characteristics respond to DBS; compute the implied change in consumer welfare caused by entry of DBS for adopters and non-adopters.
+	\end{itemize}
+\subsection{Demand System}
+	\begin{itemize}
+		\item Significant cross-sectional variation in cable prices, no variation in satellite prices -- hence rely on Slutsky symmetry to estimate price elasticities (implying impact of increasing price of DBS by one percent equals impact of decreasing price of substitutes by one percent):
+		\begin{equation*}
+			\begin{gathered}
+					s_{ANT} + s_{DBS} + s_{BAS} + s_{PRE} = 1 \Rightarrow \frac{\partial s_{ANT}}{\partial p_{DBS}} + \frac{\partial s_{DBS}}{\partial  p_{DBS}} + \frac{\partial s_{BAS}}{\partial p_{DBS}} + \frac{\partial s_{PRE}}{\partial p_{DBS}} = 0 \\
+					\text{by Slutsky symmetry, } \hspace{1cm}
+					\frac{\partial s_{DBS}}{\partial p_{DBS}} = - \frac{\partial s_{DBS}}{\partial  p_{ANT}} - \frac{\partial s_{DBS}}{\partial p_{BAS}} - \frac{\partial s_{DBS}}{\partial p_{PRE}}
+			\end{gathered}
+		\end{equation*}
+		\item \textbf{Multinomial probit} -- sensible since very few products, and allows for general patterns of substitution (elasticities unrestricted). With mixed logit, we're still assuming that the $\epsilon_{ijt}$'s are uncorrelated, whereas they can be correlated with the probit. Probit can allow e.g. for time-varying preferences for unobserved attributes of products (assuming they're normally distributed.)
+		\item Include \textbf{separate product FE for each market} to control for unobserved product quality differences. Excluding these fixed effects yields demand elasticities strongly biased toward zero. Basic specification of the model:
+		\begin{equation}
+		U_{nj} = \delta_{mj} + p_{mj} \sum_{g=2}^{5}\alpha_g \mathbbm{1}_{\{n \in g\}} + \sum_{l=1}^{L} \beta_{jl}z_{nl}+\epsilon_{nj}
+		\end{equation}
+		where $n$ indexes individuals, $j$ indexes products, $l$ indexes individual characteristics, $m$ indicates a market and $g$ an income group. The first sum allows for \textbf{price coefficients to vary by income group}; the second corresponds to the \textbf{product fixed effects interacted with demographic characteristics}. Note that this differs from mixed probit in that \textbf{we haven't interacted demographic variables with product characteristics}. The $\epsilon_{mj}$'s are normal and otherwise unrestricted. We also have
+		\begin{equation}
+		\delta_{mj} = \alpha_0 p_{mj} +\beta x_{mj} + \xi_{mj}
+		\end{equation}
+		i.e.\ the usual product-level fixed effects which comprise of contributions from observed and unobserved product characteristics.
+		\item For the second stage estimates (needed to get $\alpha_0$ and $\beta$, both of which we need to compute elasticities) they try both SUR and 3SLS estimation (the first assumes prices are exogenous; the second allows them to be endogenous, and instruments for prices with local taxes.)
+		\item \textbf{FINDINGS}: demand for DBS and for premium cable are more elastic than the demand for expanded basic; consumers view DBS to be a closer substitute for premium cable than it is for expanded basic. Strong covariance between $\epsilon_{nj}$'s is found (indicating logit would have been a bad choice). Instrument for price is important: SUR estimates are 1/6\textsuperscript{th} of those for 3SLS estimates. Compensated and uncompensated demand curves are almost identical (little to no income effects.)
+	\end{itemize}
+\subsection{Supply Side Basics}
+	\begin{itemize}
+		\item Model cable prices as a function of the observed and unobserved factors that affect the quality of DBS, cable, and premium television in the market and other exogenous factors such as average consumer demographics.
+		\item Demand side estimates important here -- provide a set of controls that reflect the unobserved quality and tastes for each product in each market.
+		\item Differences in DBS quality are due to reception -- require unobstructed line of sight to receive good coverage.
+		\item Difference in cable characteristics include whether Pay Per View is available, channel capacity of the cable system, the price of basic plus expanded basic services, the price of premium services, the year the franchise system began (proxy for technology) and some other stuff.
+		\item Results suggest higher DBS quality in a market is correlated with lower cable prices; evidence of modest improvements in cable quality in response to DBS entry. \textbf{Increased competition is welfare-improving for those who don't buy DBS as well}.
+		\item \textbf{Reduced form pricing equation}, consisting partly of DBS and cable quality (the $\xi$'s estimated in the demand system). Supply side parameters are not obtained from first order pricing conditions: the authors argue this would require assuming equilibrium concept (but are we better off without that assumption?) and knowledge of marginal cost (no easy way around that one).
+	\end{itemize}
+\subsection{Estimation Basics}
+	\begin{itemize}
+		\item Goolsbee and Petrin follow a two-step estimation procedure similar to BLP discussed in Section \ref{agentest}. They start by estimating the parameters $\bm{\theta}$---these are the parameters that \textit{are not} in the product fixed effects $\bm{\delta}$, i.e.\ they are the group-specific price parameters and the demographic-fixed effect interaction parameters---via maximum likelihood. Here the sample log-likelihood is
+		\begin{equation}
+		\ell(\bm{\theta},\bm{\delta}) = \sum_{i=1}^{N}\sum_{j=0}^{J}y_{ij}\ln P_j(\bm{\delta},\bm{\theta},\bm{z}_i)
+		\end{equation}
+		where $y_{ij}$ is consumer $i$'s choice and $\bm{z}_i$ are either observed individual characteristics (with micro data), simulated draws from your preferred distribution (with market-level data), or both (combined observed and unobserved taste heterogeneity). The key observation here is that the likelihood  depends exclusively on $\bm{\theta}$ and $\bm{\delta}$, \textbf{not on components within} $\bm{\delta}$, as other variables enter exclusively through $\bm{\delta}$.\footnote{A similar insight comes from thinking about the BLP two-step procedure outlined in Ackerberg, Benkard, Berry and Pakes (2007).}
+		\item To maximise the likelihood, we start with an initial guess of $\bm{\theta}$ from which we obtain $\bm{\delta}$. The contraction mapping approach of BLP doesn't apply to probit, so Goolsbee and Petrin use nonlinear least squares (NLLS) to solve individually for each element in $\bm{\delta}$:
+		\begin{equation}
+		\delta_m(\bm{\theta}) = \arg\min_{\delta_m}\sum_j^{3}(s_{mj}(\bm{\theta}, \delta_m)-\hat{s}_{mj}).
+		\end{equation}
+		Since BLP show that the $\delta_m(\theta)$ solving this equation exists and is unique, the unique minimiser of this equation for each $m$ is $\bm{\delta}_m$ -- we do this for all $M$ markets, individually.
+		Consistency comes from the size of the market, not the number of products -- we're effectively assuming the market shares estimates from our data are observations on the true market shares---i.e.\ no estimation error.
+
+
+		We then maximise the likelihood with respect to $\bm{\theta}$ treating $\bm{\delta}$ fixed. From our new value of $\bm{\theta}$ we then obtain a new value of $\bm{\delta}$ from NLLS. We repeat this process until we reach some tolerance level for $\bm{\theta}$.
+		This step in the procedure could be called \textit{concentrated maximum likelihood} -- we're concentrating out $\bm{\delta}$ to estimate $\bm{\theta}$, and \textit{vice versa}.
+		\item Once this process is done we can proceed to estimate the rest of our model as usual: Via the equation $\delta_j = \bm{x}_j'\bm{\beta}-\alpha p_j + \xi_j$, using instruments such that $\text{E}(\xi_j|\bm{x}_j,\bm{z}_j)=0$.
+	\end{itemize}
+
+\end{document}

@@ -1,0 +1,15 @@
+\contentsline {section}{\numberline {1}Basics}{1}{section.1}
+\contentsline {section}{\numberline {2}The Problem with Flexible Inputs}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}Panel Data Estimators}{3}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Instrumental Variables}{3}{subsection.2.2}
+\contentsline {section}{\numberline {3}Identification with Flexible Inputs}{3}{section.3}
+\contentsline {subsection}{\numberline {3.1}Quantity Data}{3}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Expenditure Data}{4}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Cost Share Identification}{4}{subsection.3.3}
+\contentsline {section}{\numberline {4}Proxy Methods I: Olley and Pakes (1996)}{4}{section.4}
+\contentsline {section}{\numberline {5}Proxy Methods II: Levinsohn and Petrin (2003)}{6}{section.5}
+\contentsline {section}{\numberline {6}Blundell Bond (2000): Two-Stage Methods Are Dead \dots }{7}{section.6}
+\contentsline {section}{\numberline {7}Ackerberg, Caves and Frazer (2015): \dots Long Live Two-Stage Methods!}{9}{section.7}
+\contentsline {section}{\numberline {8}Markup Estimation: A Primer}{12}{section.8}
+\contentsline {subsection}{\numberline {8.1}Klette and Griliches (1996)}{12}{subsection.8.1}
+\contentsline {subsection}{\numberline {8.2}De Loecker and Warzynski (2012)}{13}{subsection.8.2}

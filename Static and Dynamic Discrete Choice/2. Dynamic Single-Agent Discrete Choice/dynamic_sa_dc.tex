@@ -1,0 +1,344 @@
+\documentclass[11pt]{article}
+
+\usepackage[paper=a4paper,margin=0.75in]{geometry}
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{hyperref}
+\usepackage{bbm, bm}
+\usepackage[bottom]{footmisc}
+{
+        \newtheorem{assumption}{\textit{Assumption}}
+        \newtheorem{definition}{\textit{Definition}}
+        \newtheorem{theorem}{\textit{Theorem}}
+}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\rhead{\today}
+\lhead{Dynamic Single-Agent Discrete Choice}
+
+\newcommand\blfootnote[1]{%
+	\begingroup
+	\renewcommand\thefootnote{}\footnote{#1}%
+	\addtocounter{footnote}{-1}%
+	\endgroup
+}
+
+\begin{document}
+\onehalfspacing
+
+\section{Single-Agent Dynamic Models: The Basics}\label{s1}
+
+\blfootnote{These notes are based on Howard Smith's lectures from the 2018-2019 academic year.\\
+Of course, this is our interpretation of the material Howard presented. Good content is his; mistakes are ours.}
+
+\vspace{-1cm}
+
+	\subsection*{Notation}
+	\begin{itemize}
+		\item As usual, agents $i = \{1,\dots,N\}$.
+		\item Discrete time $t = \{1,\dots,T\}$ where $T\leq \infty$.
+		\item $a_{it}$ is agent $i$'s action in period $t$, where $a_{it}\in \mathcal{A} = \{1,\dots, A\}$.
+		\item States: $s_{it}=(x_{it},\epsilon_{it})$
+		\begin{itemize}
+			\item public: $x_{it}\in \mathcal{X}$ with $\mathcal{X}$ discrete.
+			\item private: $\epsilon_{it}=\{\epsilon_{i1t},\dots,\epsilon_{iAt}\}$ iid $\sim G:\mathbf{R}\rightarrow[0,1]$
+		\end{itemize}
+		\item Discount factor $\beta$ sometimes assumed to be known, sometimes estimated.
+    \item Timing and information:
+		\begin{enumerate}
+			\item Agents observe private shocks $\epsilon_{it}$ and $x_{it}$ at start of period $t$; they also know transition probabilities $f_a(x_{it+1}|x_{it})$ [:=$f_x(x_{it+1}|x_{it},a_{it})$];
+      			\begin{itemize}
+      				\item Implicitly we're saying $f$ is a function of $a_{it}$ too. This is bad notation; the subscript is usually reserved for denoting the random variable for which the probability measure $F$ applies. Aguirregabiria and Mira (2010) denote this $f_x(x_{it+1}|x_{it},a_{it})$, and I will do the same for the remainder of these notes.
+      				\item we've assumed $f_x(x_{it+1}|x_{it},a_{it}, \epsilon_{it})=f_x(x_{it+1}|x_{it},a_{it})$
+      				\item Sometimes we're also interested in estimating the parameters of $f_x$; can be done nonparametrically or parametrically  (Aguirregabiria and Mira, 2010).
+      			\end{itemize}
+			\item Agents choose action $a_{it}$ after observing $\epsilon_{it}$;
+      \item $x_{it}$ updates according to transition probabilities; enter period $t+1$.
+		\end{enumerate}
+		\item Conditional on $x_{it}$ previous history does not matter -- i.e. we've assumed $x_{it}$ follows a \textbf{Markov process}, and given Bellman's principle of optimality this implies $a_{it}$ depends exclusively on current and (expectations over) future values of the states.
+	\end{itemize}
+
+\subsection*{The Payoff Structure}
+	\begin{itemize}
+		\item Additive separability in flow payoff from $a$ for period $t$:\footnote{This is a simplifying assumption, relaxed e.g. in Keane and Wolpin (1997).}
+		\begin{equation}
+		u_a(x_{it}) + \epsilon_{iat}.
+		\end{equation}
+		\item Present value (ex-post) at time $t=1$ of payoff from the sequence of actions $\{a_{i}\}_{t=0}^T$:
+		\begin{equation}
+		\sum_{t=1}^{T}\sum_{a=1}^{A}\beta^{(t-1)} \mathbbm{1}_{\{a_{it}=a\}}[u_a(x_{it}) + \epsilon_{iat}]
+		\end{equation}
+		\item The ex-ante value function is
+		\begin{equation}
+		V(x_{it})=\int_{\epsilon_{t}}\max_{a\in A}\{u_a(x_{it}) + \epsilon_{iat} + \beta{}\sum_{x_{it+1}}V(x_{it+1})f_x(x_{it+1}|x_{it},a) \}dG_{\epsilon_{t}}
+		\end{equation}
+		i.e.\ we're integrating over the entire vector $\epsilon_{t}$ of length equal to the size of the action space, $|\mathcal{A}|$. $V(x_{it})$ is the expected maximum payoff given $x_{it}$ before $\epsilon_{it}$ (and thus the optimal action) is known. The summation in the second term is because we're also taking an expectation over the (discrete) state space at $t+1$.
+	\end{itemize}
+
+\subsection*{Conditional Choice Probability (CCP)}
+	\begin{itemize}
+		\item Plays the \textbf{same role as $\delta$ in static models}.
+		\item For a given choice $a$ the agent's value function is
+		\begin{equation}
+			u_a(x_{it}) + \epsilon_{iat} + \beta \sum_{x_{it+1}}V(x_{it+1})f_x(x_{it+1}|x_{it}, a).
+		\end{equation}
+		\item We decompose this into this periods shock and the ``mean choice specific value''
+		\begin{equation}
+		v_a(x_{it})=u_a(x_{it}) + \beta \sum_{x_{it+1}}V(x_{it+1})f_x(x_{it+1}|x_{it}, a)
+		\end{equation}
+		which is deterministic (since we're going to solve for the value function, and in any event it's an expectation over the max of future payoffs.)
+		\item Now we see the parallel with the static model, since
+		\begin{equation}
+			(i \text{ choose } a) \iff v_a(x_{it}) + \epsilon_{iat} >  v_{a'}(x_{it}) + \epsilon_{ia't} \quad \forall\, a'\neq a.
+		\end{equation}
+		\item From this we obtain the \textit{conditional choice probability} (CCP)
+		\begin{equation}
+			P_a(\bm{v}(x_{it})) :=P(a|x_{it}; \theta, \gamma)= \int_{\epsilon_{t}} \mathbbm{1}\{v_a(x_{it}) + \epsilon_{iat} > v_{a'}(x_{it}) + \epsilon_{ia't}~~ \forall\, a'\neq a\} ~dG_{\epsilon_{t}}
+		\end{equation}
+		the first identity makes it clear that the CCP is the conditional probability of choosing action $a$ given the states and the parameter vector $(\theta', \gamma')'$, which describe the utility function and $f_x$ respectively.
+		\item Taking this one step further, if we are willing to assume that the unobserved states $\epsilon_{it}$ are type-one Extreme Value we can follow the exact same argument as with the static logit to obtain
+		\begin{equation}
+		P_a(\bm{v}(x_{it})) = \frac{\exp{v_a(x_{it})}}{\sum_{j=0}^{|\mathcal{A}|}\exp{v_j(x_{it})}}
+		\end{equation}
+		i.e. simple logit with the choice-specific value functions in place of mean utility.
+		\item Without the Type-One EV assumption, we can still invert this bad boy to get
+		\begin{equation}
+		\bm{v}(x_{it}) = \bm{P}^{-1}(\bm{P}(x_{it}))
+		\end{equation}
+		where $\bm{v}(x_{it})$ and $\bm{P}(x_{it})$ are both vector-valued (i.e.\ $\bm{P}(x_{it})$ stacks the $P_a(\bm{v}(x_{it}))$'s over $a$, just like $\bm{v}$). This is possible for any absolutely continuous $G_{\epsilon_{t}}$.
+	\end{itemize}
+
+\subsection*{The Likelihood}
+	\begin{itemize}
+		\item Data is agent level: $\{a_{it}, x_{it}; i=1,\dots,N; t=1,\dots,T_i\}$;
+		\item $\theta, \gamma$ are parameters in $u(\cdot)$ and $f_x$ respectively;
+		\item In the notes, the likelihood for agent $i$ is then given as
+		\begin{equation}
+		\ell_i(\theta, \gamma)= \sum_{t=1}^{T_i}\ln{P_a(\theta|x_{it})} + \sum_{t=1}^{T_i -1} \ln{f_x(x_{it+1}, \gamma |x_{it}, a_{it})} + \ln{Pr(x_{i1},\gamma)}
+		\end{equation}
+		This is very bad notation, since these probabilities should be conditional on the parameters, not the other way around. An alternative notation (similar to that of Aguirregabiria and Mira, 2010 and more representative of the underlying objects we're working with) is
+		\begin{equation}
+		\ell_i(\theta, \gamma)= \sum_{t=1}^{T_i}\ln{P(a_{it}|x_{it};\theta, \gamma)} + \sum_{t=1}^{T_i -1} \ln{f_x(x_{it+1} |x_{it}, a_{it}; \gamma)} + \ln{Pr(x_{i1}; \theta,\gamma)}
+		\end{equation}
+    As for how we get to this:
+    \begin{enumerate}
+      \item Start with $Pr(a_{iT_i}, x_{iT_i},\dots,a_{i1}, x_{i1})$, which can be factorised into $T_i$ terms with the form $Pr(a_{it},x_{it}|\tilde{a}_{it-1}, \tilde{x}_{it-1})$, where $\tilde{a}_{it-1}$ denotes the history of $a_{it}$ up to $t-1$;
+      \item Diving joint likelihood in conditional and marginal, we have
+      \begin{equation*}
+        Pr(a_{it},x_{it}|\tilde{a}_{it-1}, \tilde{x}_{it-1})=Pr(a_{it}|x_{it},\tilde{a}_{it-1}, \tilde{x}_{it-1})Pr(x_{it}|\tilde{a}_{it-1}, \tilde{x}_{it-1})
+      \end{equation*}
+      \item By the Markovian structure, $Pr(x_{it}|\tilde{a}_{it-1}, \tilde{x}_{it-1})=Pr(x_{it}|x_{it-1}, a_{it-1})$; the additively separable utility structure implies  $Pr(a_{it}|x_{it},\tilde{a}_{it-1}, \tilde{x}_{it-1})=Pr(a_{it}|x_{it})$.
+    \end{enumerate}
+		\item We can also get consistent but inefficient estimates by omitting $\ln{Pr(x_{i1},\theta,\gamma)}$, the initial condition. This gives us the conditional likelihood.
+	\end{itemize}
+
+\subsection*{Estimation}
+	\begin{itemize}
+		\item If we knew the value function, estimation would be exactly the same as in the static case. Trouble is we don't know it.
+		\item Full solution method involves solving explicitly for the value function, either by backward induction (as implemented by Rust, 1987) or by value function iteration (i.e.\ iteration on \eqref{exante}) or policy function iteration (see Aguirregabiria and Mira) to obtain $V(x),~\forall x\in \mathcal{X}$.
+		\item Alternatively, we can implement one of the three inversion-based methods (inversion shown to hold by Hotz and Miller, 1993). The one we focus on is a two-step procedure wherein we \textbf{first estimate the choice probabilities} and \textbf{invert them to get estimates of the $v(x)$'s}, which are then used in the second step (as if they were data) to estimate the parameters of the model.\footnote{Note the similarities with the static case, in which $\delta$ is first estimated, then treated as data to obtain $\xi$, and conditions for $\xi$ are finally used to identify model parameters.} This is repeated until convergence is achieved.
+	\end{itemize}
+
+\section{Application: Optimal Stopping, Rust (1987)}
+	\subsection{Setup}
+	\begin{itemize}
+	\item We ignore the subscript $i$ for simplicity -- the observations are buses.
+	\item Agent has a product of age $x\in \mathcal{X}$
+	\item Action set is $\mathcal{A}=(E,K)$, where $E$ is ``Exit''/scrap, and $K$ is ``Keep''.
+	\item Product age is obviously deterministic, so no need to estimate transition probabilities: $x_{t} = \min{}(x_{t-1}+1, X)$ where $X$ is the maximum age of any bus (assumed to be something like 15 years -- turns this into a finite horizon problem).
+	\item Define the value function $V(x_{t+1})$ as $\sum_{x_{t+1}} V(x_{t+1})f_K(x_{t+1}|x_t)$.
+	\item Period $t$ flow payoff:
+	\begin{equation}
+	u_a(x_t)+\epsilon_{at} =
+	\begin{cases}
+	\theta_0 + \epsilon_{Et} & \text{ if } a = E \\
+	\theta_1 - \theta_2 x_t + \epsilon_{Kt} & \text{ if } a=K.
+	\end{cases}
+	\end{equation}
+	with $\epsilon_{at}$ iid Type-1 EV over $a$ and $t$.
+	\end{itemize}
+
+\subsection{Solving and Estimating a Finite Horizon Version of the Model}
+\begin{itemize}
+	\item Solution method: Backward induction (only possible with finite number of periods).
+	\item Let $t\in \{1,2\}$. Product age $x<X$ in period $t=1$.
+\end{itemize}
+
+  \subsubsection*{In Period $t = 2$}
+  	\begin{itemize}
+  		\item We only get to this stage if $a=K$ is period 1. Age is now $x+1$.
+  		\item CCPs in period 2 given state $x+1$ are the same as in a static model, since there is no continuation value in the final period:
+  		\begin{equation}
+  		P(a|x+1;\theta) =
+  		\begin{cases}
+  		\frac{1}{1+\exp{}(\theta_1 - \theta_2(x+1))} & \text{ if } a=E \\
+  		& \\
+  		\frac{\exp{}(\theta_1 - \theta_2(x+1))}{1+\exp{}(\theta_1 - \theta_2(x+1))} & \text{ if } a=K \\
+  		\end{cases}
+  		\end{equation}
+  		where $\theta_0$ is normalised to zero.
+  	\end{itemize}
+  \subsubsection*{In Period $t=1$}
+  	\begin{itemize}
+  		\item In period $t=1$, the period $t=2$ shocks $\epsilon_2 \equiv (\epsilon_{E2}, \epsilon_{K2})$ are unknown. Hence the continuation value is
+  		\begin{flalign}
+  		V(x+1) & = E_{\epsilon_2}\max\{\epsilon_{E2}, \theta_1-\theta_2(x+1)+\epsilon_{K2}\} \\
+  		&  = \ln{}[1+\exp{}(\theta_1-\theta_2(x+1))]
+  		\end{flalign}
+  		by the usual log-sum result.
+  		\item Choice-specific value function (note that the state indicates the timing of the value function):
+  		\begin{equation}\label{csvf1}
+  		v_{a}(x)+\epsilon_{a1} =
+  		\begin{cases}
+  		\epsilon_{E1} & \text{ if } a = E \\
+  		\theta_1 - \theta_2 x + \epsilon_{K1} + \beta V(x+1) & \text{ if } a = K \\
+  		\end{cases}
+  		\end{equation}
+  		\item CCPs in period $t=1$ also have closed form:
+  		\begin{equation}
+  		P(a|x, \theta) =
+  		\begin{cases}
+  		\frac{1}{1+\exp{}(\theta_1 - \theta_2x + \beta V(x+1)))} & \text{ if } a=E \\
+  		& \\
+  		\frac{\exp{}(\theta_1 - \theta_2x + \beta V(x+1))}{1+\exp{}(\theta_1 - \theta_2x + \beta V(x+1))} & \text{ if } a=K \\
+  		\end{cases}
+  		\end{equation}
+  		where of course $V(x+1)= \ln{}[1 + \exp{}(\theta_1 - \theta_2(x+1))]$. This problem is very easy to solve now. You just pick the path of actions that yields the highest expected payoff in period 1.
+  		\item Moreover, with the probabilities we've defined you could estimate this by MLE. The likelihood for any individual observation for which \textit{an action is taken in both periods} is
+  		\begin{flalign*}
+  		\mathcal{L}(K_1, a_2, x, x+1) & = Pr(a_2, x+1, K_1, x, \theta)\\
+  		& = Pr(a_2|x+1,K_1, x,\theta)Pr(x+1|K_1,x,\theta)Pr(K_1|x,\theta)Pr(x,\theta), \\
+  		& = Pr(a_2|x+1;\theta)Pr(K_1|x,\theta)Pr(x,\theta),\\
+  		& \quad\quad (\text{Markov property \& } Pr(x+1|K_1,x;\theta) = 1) \\
+  		\ell (\theta) & = \ln P(a_2 | x+1, \theta) + \ln P(K_1|x,\theta) + \ln Pr(x, \theta)\\
+  		& = \ln P(a_2|x+1, \theta) + \ln P(K_1|x,\theta) + \ln Pr(x, \theta)
+  		\end{flalign*}
+  		By similar reasoning, we can thus define the log-likelihood for any observation piecewise as
+  		\begin{equation}
+  		\ell (\theta)= \ln Pr(x, \theta) +
+  		\begin{cases}
+  		\ln P(a_2|x+1, \theta)+ \ln P(K_1|x,\theta)& \text{if } a_1 = K_1 \\
+  		\ln P(E_1|x,\theta) & \text{otherwise.}
+  		\end{cases}
+  		\end{equation}
+  	\end{itemize}
+
+\subsection{Solving and Estimating by the Nested Fixed Point Algorithm (Rust, 1987)}
+	\begin{itemize}
+		\item Although we work with finite-$t$ data, the infinite-horizon treatment assumes an infinite process.
+		\item We still have $x_{t+1} = \min (x_t+1, X)$  if $a_t=K$. Given state $x_t\in \mathcal{X}$, the ex-ante value function is
+		\begin{equation}
+      \label{exante}
+		V(x_t) = \mathbbm{E}_{\epsilon_t}\max \{\epsilon_{Et}, \theta_1 - \theta_2 x_t + \epsilon_{Kt} + \beta V(x_{t+1}) \}
+		\end{equation}
+		i.e., for Type-1 EV errors,
+		\begin{equation}\label{vf1}
+			V(x_t)=\ln [1+\exp (\theta_1 - \theta_2 x_t + \epsilon_{Kt} + \beta V(x_{t+1}))], \quad\forall x_t\in \mathcal{X}= \{1,\dots,X\}
+		\end{equation}
+		\item \textbf{Estimation Algorithm - NFXP}:\footnote{The `Nested' aspect comes from the inner loop in Step 2.}
+		\begin{enumerate}
+			\item Guess some starting parameters $\theta$.
+			\item Given $\theta$, solve for $\{V(x)\}_{x\in \mathcal{X}}$ by value function iteration:
+      		\begin{enumerate}
+      			\item Set a feasible initial value $V(x_t)$ for all $x_t$ (vector-valued \textbf{Bellman operator});
+      			\item Substitute the initial value that maximises the Bellman equation into \eqref{vf1};
+            \item Obtain $V(x_t)$ by maximising the value function on the RHS of \eqref{vf1};
+      			\item \textbf{Iterate}: put each update $V(x_t)$ from LHS into RHS until LHS no longer changes.
+      		\end{enumerate}
+			\item Use the $\{V(x)\}_{x\in \mathcal{X}}$ from step 2 and the factorization of $Pr(a_T, x_T,\dots,a_1,x_1,\theta)$ to set up the log-likelihood\footnote{Recall that the value function enters the $Pr(\cdot)$, which is why we need to calculate it.} and solve for the parameters that maximize it.
+			\item Repeat steps 2 and 3 until $\theta$ converges.
+		\end{enumerate}
+		\item Value function iteration is great because it can be shown to be a contraction mapping---hence we have guaranteed convergence---but it's very slow, and only gets slower as the state space increases.
+	\end{itemize}
+
+\subsection{Solving and Estimating with Two-Step Methods: Inversion}
+		Here we're again using the result from Hotz and Miller (1993) which shows that any absolutely continuous probability measure admits an inverse. For the Dynamic Programming Conditional Logit (DPCL) -- i.e. Rust's (1987) model -- this works in almost exact parallel with standard logit.
+  \begin{enumerate}
+    \item Given the logit CCPs
+		\begin{equation}\label{ccps1}
+			P(K|x_t,\theta) = \frac{\exp{}(v_K(x_t))}{1+\exp{}(v_K(x_t))}\quad\text{and}\quad P(E|x_t,\theta) = \frac{1}{1+\exp{}(v_K(x_t))}
+		\end{equation}
+    by the usual inversion argument we have
+		\begin{equation}
+		v_K(x_t)= \ln P(K|x_t,\theta) - \ln P(E|x_t,\theta)
+		\end{equation}
+		and, by the log-sum result, the ex-ante value function is
+		\begin{equation}
+		\begin{split}
+		V(x_t) & \equiv E_{\epsilon_t}[\epsilon_{Et}, v_K(x_t)+\epsilon_{Kt}] \\
+		& = \ln [1 + \exp (\ln P(K|x_t, \theta) - \ln P(E|x_t, \theta)]
+		\end{split}
+		\end{equation}
+		\item We can then calculate the sample mean\footnote{Over $i,t$; here just over $t$ since we've omitted $i$ for simplicity} CCPs \eqref{ccps1} for each $x\in \mathcal{X}$ as
+		\begin{equation}
+      \label{nonpccp}
+		\hat{P}(a|x) = \frac{\sum_t \mathbbm{1}\{a_{t}=a, x_{t}=x\}}{\sum_t \mathbbm{1}\{x_{t}=x\}}
+		\end{equation}
+		from which we obtain sample mean choice-specific value function estimates
+		\begin{equation}
+      \label{vhat}
+		\hat{v}_K(x) = \ln \hat{P}(K|x) - \ln \hat{P}(E|x,\theta)
+		\end{equation}
+		and mean ex-ante value function $\hat{V}(x)=\ln [1+\exp (\hat{v}_k(x))]$; finally, we obtain
+		\begin{equation}
+      \label{hmccp}
+			P(a|x_t,\theta)=
+			\begin{cases}
+			\frac{1}{1 + \exp (\theta_1 - \theta_2 x_t + \beta \hat{V}(x_{t+1}))} & \text{ if } a=E \\
+			&\\
+			\frac{\exp (\theta_1 - \theta_2 x_t + \beta \hat{V}(x_{t+1}))}{1 + \exp (\theta_1 - \theta_2 x_t + \beta \hat{V}(x_{t+1}))} & \text{ if } a=K
+			\end{cases}
+		\end{equation}
+		\item We estimate our parameters $\theta$ by GMM or PseudoML, both of which require data $\{a_t, x_t\}_{t=1}^T$:
+\begin{enumerate}
+\item \textbf{GMM} - Hotz and Miller (1993)
+
+Given \eqref{hmccp}, form prediction errors as $ \xi_{at}(\theta) = \mathbbm{1}_{\{a_t = a\}} - P(a|x_t; \theta)$ and, for instruments $Z_t$, moment conditions as
+\begin{equation*}
+  b(\theta) \equiv \frac{1}{T}\sum_t^T[Z_t ~ \xi_{at}(\theta)] = 0
+\end{equation*}
+and, for some weighting matrix $W$, estimate $\theta$ by GMM as $\hat{\theta}^{GMM} = \arg \min_\theta b(\theta)^\intercal W b(\theta)$.
+
+\item \textbf{PseudoML} - Aguirregabiria and Mira (2002)
+
+Given \eqref{hmccp}, we have sample log-likelihood as
+\begin{equation*}
+  \ell(\theta) = \sum_t \sum_a \mathbbm{1}_{\{a_t = a\}} \ln P(a|x_t,\theta)
+\end{equation*}
+and can estimate $\theta$ as $\hat{\theta}^{PML} = \arg \min_\theta \ell(\theta)$. The likelihood depends on \eqref{nonpccp} and as such will suffer from measurement error bias.
+	\end{enumerate}
+
+The problem with inversion methods is that \textbf{they suffer from finite sample bias entering non-linearly in our moment conditions}.
+	\end{enumerate}
+
+\subsection{Estimating with Two-Step Methods: Simulation}
+	Inversion methods can be impractical when $X$ is very large. Simulation method proposed by Hotz et al. (1994):
+  \begin{enumerate}
+    \item Set up a policy function, i.e.\ the choice rule that determines the \textbf{control variable} as a function of the \textbf{state variable}. It is a function of the mean choice-specific values $v_a(x)$ and errors -- e.g. the simple choice rule \texttt{take action j iff} $v_j(x) + \varepsilon_{jt} \geq v_k(x) + \varepsilon_{kt}, ~ \forall j \neq k$.
+    \item Non-parametrically estimate empirical CCPs as in \eqref{nonpccp};
+    \item Invert CCPs to obtain mean value function estimates as in \eqref{vhat};
+    \item \textbf{Forward Simulation}:
+      \begin{enumerate}
+        \item Draw a vector of errors for each action from a chosen distribution for each $t$;
+        \item Obtain the action implied by the choice rule for observed $x_t$ and drawn errors;
+        \item Simulate $x_{t+1}$ given the actions taken, from $t=1$ onwards;
+        \item Repeat until final period $T$;
+        \item Repeat for $N_S$ matrices of simulated errors; obtain simulated \textit{ex-ante} value functions $V^{sim}(x)$ by averaging over $N_S$, and $v^{sim}(x)$ by plugging $V^{sim}(x)$ in choice value functions;
+      \end{enumerate}
+    \item Set up moment conditions matching empirical CCPs and simulated mean choice-specific values (which are functions of $\theta$) and estimate $\theta$ by
+    \begin{enumerate}
+      \item \textbf{GMM} or \textbf{PseudoML} (both as discussed above);
+      \item \textbf{Contraction}: select the $\theta$ that best approximates the inverted CCP - in Rust's case
+          \begin{equation}
+            \begin{gathered}
+                \tilde{\theta} = \arg \min_\theta || \ln \hat{P}_K - \ln \hat{P}_E - \big(\theta_0 - \theta_1 x_t + \beta V^{sim}(x_{t+1}; \theta)\big)||
+            \end{gathered}
+          \end{equation}
+          in which simulation error enters linearly (finite sample bias still enters non-linearly as in the above.)
+    \end{enumerate}
+  \end{enumerate}
+
+\end{document}

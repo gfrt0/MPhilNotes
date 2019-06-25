@@ -1,0 +1,7 @@
+\BOOKMARK [1][-]{section.1}{Single-Agent Dynamic Models: The Basics}{}% 1
+\BOOKMARK [1][-]{section.2}{Application: Optimal Stopping, Rust \(1987\)}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Setup}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Solving and Estimating a Finite Horizon Version of the Model}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Solving and Estimating by the Nested Fixed Point Algorithm \(Rust, 1987\)}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.4}{Solving and Estimating with Two-Step Methods: Inversion}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.5}{Estimating with Two-Step Methods: Simulation}{section.2}% 7
